@@ -1,9 +1,10 @@
 const { User } = require("../models/User");
 
-let auth = async (req, res, next) => {
+let auth = (req, res, next) => {
+  console.log(req.cookies);
   let token = req.cookies.x_auth;
   try {
-    User.schema.methods.findByToken(token, function (err, user) {
+    User.findByToken(token, function (err, user) {
       req.token = token;
       req.user = user;
       next();

@@ -63,7 +63,7 @@ userSchema.methods.generateToken = async function (cb) {
   }
 };
 
-userSchema.methods.findByToken = function (token, cb) {
+userSchema.statics.findByToken = function (token, cb) {
   jwt.verify(token, process.env.JWT_SECRET, async function (err, payload) {
     try {
       const userInfo = await User.findOne({ _id: payload, token: token });
