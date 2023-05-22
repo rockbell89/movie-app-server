@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const { User } = require("../models/User");
@@ -38,6 +39,7 @@ router.post("/login", async (req, res) => {
           message: "비밀번호가 틀렸습니다",
         });
       }
+
       user.generateToken((err, user) => {
         if (err) {
           return res.status(400).send(err);
@@ -55,22 +57,29 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/auth", auth, (req, res) => {
-  res.status(200).json({
-    isAuth: true,
-    _id: req.user._id,
-    email: req.user.email,
-    isAdmin: req.user.role === 0 ? false : true,
-  });
+  if (req.user) {
+    res.status(200).json({
+      isAuth: true,
+      _id: req.user._id,
+      email: req.user.email,
+      isAdmin: req.user.role === 0 ? false : true,
+    });
+  } else {
+    res.status(401).json({
+      isAUth: false,
+      message: "로그인이 필요합니다 ",
+    });
+  }
 });
 
 router.get("/logout", auth, async (req, res) => {
   try {
-    console.log("req.user", req.user);
     const isUpdated = await User.findOneAndUpdate(
       { _id: req.user._id },
       { token: "" }
     );
     if (isUpdated) {
+      res.clearCookie("x_auth");
       return res.status(200).send({ success: true });
     }
   } catch (error) {

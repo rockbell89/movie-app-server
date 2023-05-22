@@ -5,8 +5,6 @@ const express = require("express");
 const app = express();
 const port = 5000;
 const cors = require("cors");
-const { User } = require("./models/User");
-const { auth } = require("./middleware/auth");
 
 /**
  * mongoose - mongoDB 기반의 ODM 라이브러리로 데이터베이스를 더 쉽게 다루게 해줌
@@ -24,7 +22,7 @@ mongoose.connect(process.env.MONGO_DB_URL).then(() => {
 // app.use(cors());
 app.use(
   cors({
-    origin: ["http://127.0.0.1:5173", "https://rockbell89.github.io"],
+    origin: [process.env.BASE_URL, process.env.GITHUB_URL],
     credentials: true,
   })
 );
@@ -36,5 +34,6 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use("/api/users", require("./routes/users"));
+app.use("/api/favorite", require("./routes/favorite"));
 
 app.listen(port, () => console.log(`Example app listening on port ${port}`));
